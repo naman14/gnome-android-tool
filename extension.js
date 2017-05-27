@@ -8,6 +8,10 @@ const PopupMenu = imports.ui.popupMenu;
 const Clutter = imports.gi.Clutter;
 const Panel = imports.ui.panel;
 const Lang = imports.lang;
+const Util = imports.misc.util;
+const GLib = imports.gi.GLib;
+const Gio = imports.gi.Gio;
+
 
 
 let button;
@@ -18,14 +22,14 @@ const AndroidMenuItem = new Lang.Class({
 
     _init: function(type) {
 
-    this.parent();
+        this.parent();
 
-    this.type = type;
+        this.type = type;
 
         this._icon = new St.Icon({ icon_name: 'system-run-symbolic',
                                    icon_size: 16 });
 
-    this.actor.add_child(this._icon);
+        this.actor.add_child(this._icon);
 
         this._label = new St.Label({ text: "Take Screenshot" });
         this.actor.add_child(this._label);
@@ -38,7 +42,7 @@ const AndroidMenuItem = new Lang.Class({
     },
 
     activate: function(event) {
-    this.parent(event);
+        this.parent(event);
     }
 
 });
@@ -60,9 +64,40 @@ const AndroidMenu = new Lang.Class({
         hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.actor.add_actor(hbox);
     
-        this.menu.addMenuItem(new AndroidMenuItem("Devices"))
+        let item = new AndroidMenuItem("Devices");
+
+        item.connect('activate', Lang.bind(this, this._screenshotClicked));
+        this.menu.addMenuItem(item);
+
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
     
+    },
+
+    _screenshotClicked: function() {
+        global.log("screenshot clicked")
+        
+        let [res, pid, input, out, error] = GLib.spawn_async_with_pipes(null, ["bash", "-c", "adb devices | awk 'NR>0 {print $1}'"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+
+        let out_reader = new Gio.DataInputStream({ base_stream: new Gio.UnixInputStream({fd: out}) });
+        let [output, size] = out_reader.read_until("", null);
+
+        let error_reader = new Gio.DataInputStream({ base_stream: new Gio.UnixInputStream({fd: error}) });
+        let [error_output, size1] = error_reader.read_until("", null);
+
+        if(output!= null) 
+        global.log(output.toString());
+
+        if(error_output!=null)
+        global.log(error_output.toString());
+
+
+
+
+    },
+
+    _toArray: function(str) {
+        let arr = str.split(" ");
+        return arr;
     }
 
 });
