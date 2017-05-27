@@ -2,52 +2,88 @@
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
+const PanelMenu = imports.ui.panelMenu;
+const Shell = imports.gi.Shell;
+const PopupMenu = imports.ui.popupMenu;
+const Clutter = imports.gi.Clutter;
+const Panel = imports.ui.panel;
+const Lang = imports.lang;
 
-let text, button;
 
-function _hideHello() {
-    Main.uiGroup.remove_actor(text);
-    text = null;
-}
+let button;
 
-function _showHello() {
-    if (!text) {
-        text = new St.Label({ style_class: 'helloworld-label', text: "Hello, world!" });
-        Main.uiGroup.add_actor(text);
+const AndroidMenuItem = new Lang.Class({
+    Name: 'AndroidMenuItem',
+    Extends: PopupMenu.PopupBaseMenuItem,
+
+    _init: function(type) {
+
+    this.parent();
+
+    this.type = type;
+
+        this._icon = new St.Icon({ icon_name: 'system-run-symbolic',
+                                   icon_size: 16 });
+
+    this.actor.add_child(this._icon);
+
+        this._label = new St.Label({ text: "Take Screenshot" });
+        this.actor.add_child(this._label);
+
+
+    },
+
+    destroy: function() {
+        this.parent();
+    },
+
+    activate: function(event) {
+    this.parent(event);
     }
 
-    text.opacity = 255;
+});
 
-    let monitor = Main.layoutManager.primaryMonitor;
+const AndroidMenu = new Lang.Class({
+    Name: 'AndroidMenu.AndroidMenu',
+    Extends: PanelMenu.Button,
 
-    text.set_position(monitor.x + Math.floor(monitor.width / 2 - text.width / 2),
-                      monitor.y + Math.floor(monitor.height / 2 - text.height / 2));
+    _init: function() {
+         this.parent(0.0, "Android Menu", false);
 
-    Tweener.addTween(text,
-                     { opacity: 0,
-                       time: 2,
-                       transition: 'easeOutQuad',
-                       onComplete: _hideHello });
-}
+        let hbox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
+        let label = new St.Label({
+            text: _("AndroidTool"),
+            y_expand: true,
+            y_align: Clutter.ActorAlign.CENTER
+        });
+        hbox.add_child(label);
+        hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
+        this.actor.add_actor(hbox);
+    
+        this.menu.addMenuItem(new AndroidMenuItem("Devices"))
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+    
+    }
+
+});
+
 
 function init() {
-    button = new St.Bin({ style_class: 'panel-button',
-                          reactive: true,
-                          can_focus: true,
-                          x_fill: true,
-                          y_fill: false,
-                          track_hover: true });
-    let icon = new St.Icon({ icon_name: 'system-run-symbolic',
-                             style_class: 'system-status-icon' });
-
-    button.set_child(icon);
-    button.connect('button-press-event', _showHello);
+  
 }
 
+
+let _indicator;
+
+
 function enable() {
-    Main.panel._rightBox.insert_child_at_index(button, 0);
+    _indicator = new AndroidMenu;
+ 
+    Main.panel.addToStatusArea('android-menu', _indicator);
+
 }
 
 function disable() {
-    Main.panel._rightBox.remove_child(button);
+    _indicator.destroy();
 }
+
