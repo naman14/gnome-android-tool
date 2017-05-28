@@ -57,17 +57,16 @@ function takeScreenshot(deviceId) {
 
 function recordScreen(deviceId) {
     let time = '$(date +%Y-%m-%d-%H:%M)'
-    let [res, pid] = GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" shell screenrecord /sdcard/screenrecord.mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
-    global.log(pid);
-    return pid;
+    GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" shell screenrecord /sdcard/screenrecord.mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 
 }
 
 function stopScreenRecording(deviceId, pid) {
     let time = '$(date +%Y-%m-%d-%H:%M)'
 
-    GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell kill -2 "+pid], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell pkill -INT screenrecord"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
     GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" pull /sdcard/screenrecord.mp4 ~/Desktop/record"+ time +".mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" shell rm /sdcard/screenrecord.mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 
 }
 

@@ -18,7 +18,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const AdbHelper = Me.imports.adbhelper;
 
-let screenRecord = {recording: false, pid: 0, deviceId: 0};
+let screenRecord = {recording: false, deviceId: 0};
 
 const AndroidMenuItem = new Lang.Class({
     Name: 'AndroidMenuItem',
@@ -102,12 +102,11 @@ const AndroidMenu = new Lang.Class({
 
     _recordScreen: function(device) {
         if(screenRecord.recording) {
-            AdbHelper.stopScreenRecording(device.deviceId, screenRecord.pid);
-            screenRecord.pid = 0
+            AdbHelper.stopScreenRecording(device.deviceId);
             screenRecord.recording = false;
             screenRecord.deviceId = 0;
         } else {
-            screenRecord.pid = AdbHelper.recordScreen(device.deviceId);
+            AdbHelper.recordScreen(device.deviceId);
             screenRecord.recording = true;
             screenRecord.deviceId = device.deviceId;
         }
