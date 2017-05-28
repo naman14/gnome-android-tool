@@ -78,11 +78,7 @@ const AndroidMenu = new Lang.Class({
     },
 
     _findDevices: function() {
-        // AdbHelper.findDevices();
-    },
-
-    _screenshotClicked: function() {
-        global.log("screenshot clicked")
+        
         let result = AdbHelper.findDevices();
 
         if(result.error != null) {
@@ -90,9 +86,23 @@ const AndroidMenu = new Lang.Class({
         }
 
         if(result.devices != null && result.devices.length!=0) {
-            global.log(result.devices.toString())
+
+            for(var i=0; i<result.devices.length; i++) {
+                let device = result.devices[i];
+
+                global.log(device.deviceId + " - " + device.name);
+
+            
+            }
         }
 
+    },
+
+    _screenshotClicked: function() {
+
+        AdbHelper.takeScreenshot(device.deviceId);
+
+     
     },
 
     _toArray: function(str) {
