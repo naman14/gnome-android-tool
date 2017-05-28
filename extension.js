@@ -27,10 +27,12 @@ const AndroidMenuItem = new Lang.Class({
 
         this.parent();
 
-        this._icon = new St.Icon({ icon_name: 'system-run-symbolic',
-                                   icon_size: 16 });
+        if(item.icon != null) {
+            this._icon = new St.Icon({ icon_name: 'system-run-symbolic',
+                                       icon_size: 16 });
 
-        this.actor.add_child(this._icon);
+            this.actor.add_child(this._icon);
+        }
 
         this._label = new St.Label({ text: item.label });
         this.actor.add_child(this._label);
@@ -92,6 +94,7 @@ const AndroidMenu = new Lang.Class({
     _screenshotClicked: function(device) {
 
         AdbHelper.takeScreenshot(device.deviceId);
+        Main.notify("Screenshot saved in Desktop")
     
     },
 
@@ -109,17 +112,26 @@ const AndroidMenu = new Lang.Class({
 
                 if(device != null) {
 
-                    let screenshotItem = new AndroidMenuItem({label: "Take screenshot"});
+                    let section = new PopupMenu.PopupMenuSection();
+
+                    let deviceItem = new AndroidMenuItem({label: device.name.trim() + " - " + device.deviceId.trim()});
+                    section.addMenuItem(deviceItem);
+
+                    let screenshotItem = new AndroidMenuItem({label: "    Take screenshot"});
                     screenshotItem.connect('activate', Lang.bind(this, function() {
                         this._screenshotClicked(device)
                     }));
-                    this.menu.addMenuItem(screenshotItem);
+                    section.addMenuItem(screenshotItem);
 
-                    let recordScreenItem = new AndroidMenuItem({label: "Record screen"});
+                    let recordScreenItem = new AndroidMenuItem({label: "    Record screen"});
                     recordScreenItem.connect('activate', Lang.bind(this, function() {
                         this._recordScreen(device)
                     }));
-                    this.menu.addMenuItem(recordScreenItem);
+                    section.addMenuItem(recordScreenItem);
+
+                    this.menu.addMenuItem(section)
+                    this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
             }
 
             
