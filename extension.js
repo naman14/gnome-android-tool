@@ -63,52 +63,85 @@ const AndroidMenu = new Lang.Class({
         hbox.add_child(label);
         hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.actor.add_actor(hbox);
-    
-        let screenshotItem = new AndroidMenuItem({label: "Take screenshot"});
-        screenshotItem.connect('activate', Lang.bind(this, this._screenshotClicked));
-        this.menu.addMenuItem(screenshotItem);
-
-
-        let recordScreenItem = new AndroidMenuItem({label: "Record screen"});
-        recordScreenItem.connect('activate', Lang.bind(this, this._screenshotClicked));
-        this.menu.addMenuItem(recordScreenItem);
 
         this.actor.connect('button-press-event', Lang.bind(this,this._findDevices));
+
+        this._addErrorItem("No devices found");
     
     },
 
     _findDevices: function() {
-        
+
         let result = AdbHelper.findDevices();
 
         if(result.error != null) {
             global.log(result.error);
-        }
+            this._addErrorItem(result.error);
+        } else {
 
         if(result.devices != null && result.devices.length!=0) {
+            this._addMenuItems(result.devices);
+        } else {
+            this._addErrorItem("No devices found");
+        }
 
-            for(var i=0; i<result.devices.length; i++) {
-                let device = result.devices[i];
+        }
 
-                global.log(device.deviceId + " - " + device.name);
+    },
+
+    _screenshotClicked: function(device) {
+
+        AdbHelper.takeScreenshot(device.deviceId);
+    
+    },
+
+    _recordScreen: function(device) {
+
+    },
+
+    _addMenuItems: function(devices) {
+
+            this.menu.removeAll();
+
+            for(var i=0; i < devices.length; i++) {
+
+                let device = devices[i];
+
+                if(device != null) {
+
+                    let screenshotItem = new AndroidMenuItem({label: "Take screenshot"});
+                    screenshotItem.connect('activate', Lang.bind(this, function() {
+                        this._screenshotClicked(device)
+                    }));
+                    this.menu.addMenuItem(screenshotItem);
+
+                    let recordScreenItem = new AndroidMenuItem({label: "Record screen"});
+                    recordScreenItem.connect('activate', Lang.bind(this, function() {
+                        this._recordScreen(device)
+                    }));
+                    this.menu.addMenuItem(recordScreenItem);
+            }
 
             
             }
-        }
+
+      
+    },
+
+    _addErrorItem: function(error) {
+
+            this.menu.removeAll();
+            let errorItem = new AndroidMenuItem({label: error});
+            this.menu.addMenuItem(errorItem);
 
     },
 
-    _screenshotClicked: function() {
-
-        AdbHelper.takeScreenshot(device.deviceId);
-
-     
-    },
 
     _toArray: function(str) {
         let arr = str.split(" ");
         return arr;
     }
+
 
 });
 
