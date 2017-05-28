@@ -28,7 +28,7 @@ const AndroidMenuItem = new Lang.Class({
         this.parent();
 
         if(item.icon != null) {
-            this._icon = new St.Icon({ icon_name: 'system-run-symbolic',
+            this._icon = new St.Icon({ icon_name: item.icon,
                                        icon_size: 16 });
 
             this.actor.add_child(this._icon);
@@ -57,14 +57,15 @@ const AndroidMenu = new Lang.Class({
          this.parent(0.0, "Android Menu", false);
 
         let hbox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
-        let label = new St.Label({
-            text: _("AndroidTool"),
-            y_expand: true,
-            y_align: Clutter.ActorAlign.CENTER
+
+        this._icon = new St.Icon({ icon_name: 'android_icon',
+                                    style_class: 'system-status-icon'
         });
-        hbox.add_child(label);
+        hbox.add_child(this._icon);
         hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.actor.add_actor(hbox);
+        this.actor.add_style_class_name('panel-status-button');
+
 
         this.actor.connect('button-press-event', Lang.bind(this,this._findDevices));
 
@@ -117,13 +118,13 @@ const AndroidMenu = new Lang.Class({
                     let deviceItem = new AndroidMenuItem({label: device.name.trim() + " - " + device.deviceId.trim()});
                     section.addMenuItem(deviceItem);
 
-                    let screenshotItem = new AndroidMenuItem({label: "    Take screenshot"});
+                    let screenshotItem = new AndroidMenuItem({label: "Take screenshot", icon: 'screenshot_icon'});
                     screenshotItem.connect('activate', Lang.bind(this, function() {
                         this._screenshotClicked(device)
                     }));
                     section.addMenuItem(screenshotItem);
 
-                    let recordScreenItem = new AndroidMenuItem({label: "    Record screen"});
+                    let recordScreenItem = new AndroidMenuItem({label: "Record screen", icon: 'record_icon'});
                     recordScreenItem.connect('activate', Lang.bind(this, function() {
                         this._recordScreen(device)
                     }));
@@ -158,8 +159,9 @@ const AndroidMenu = new Lang.Class({
 });
 
 
-function init() {
-  
+function init(extensionMeta) {
+    let theme = imports.gi.Gtk.IconTheme.get_default();
+    theme.append_search_path(extensionMeta.path + "/icons");
 }
 
 
