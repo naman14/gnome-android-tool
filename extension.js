@@ -116,6 +116,11 @@ const AndroidMenu = new Lang.Class({
         }
     },
 
+    _connectTCP: function(device) {
+        let status = AdbHelper.establishTCPConnection(device.deviceId)
+        Main.notify(status)
+    },
+
     _addMenuItems: function(devices) {
 
             this.menu.removeAll();
@@ -150,6 +155,13 @@ const AndroidMenu = new Lang.Class({
                         this._recordScreen(device)
                     }));
                     section.addMenuItem(recordScreenItem);
+
+                    let remoteItem = new AndroidMenuItem({label: "Establish remote connection", icon: "android_icon"});
+
+                    remoteItem.connect('activate', Lang.bind(this, function() {
+                        this._connectTCP(device)
+                    }));
+                    section.addMenuItem(remoteItem);
 
                     this.menu.addMenuItem(section)
                     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());

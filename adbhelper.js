@@ -69,6 +69,22 @@ function stopScreenRecording(deviceId, pid) {
 
 }
 
+function establishTCPConnection(deviceId) {
+    let deviceIp = getDeviceIp(deviceId);
+
+    GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId + " tcpip 5555"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    let [res, out, error] = GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId + " connect " + deviceIp+":5555"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+
+    return out.toString().trim();
+
+}
+
+function getDeviceIp(deviceId) {
+     let [res, out, error] = GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell ip route | awk '{print $9}'"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+     return out.toString().trim();
+
+}
+
 
 function isEmpty(str) {
         return (!str || str.length === 0 || !str.trim());
