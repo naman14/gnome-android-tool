@@ -65,8 +65,7 @@ function stopScreenRecording(deviceId, pid) {
     let time = '$(date +%Y-%m-%d-%H:%M)'
 
     GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell pkill -INT screenrecord"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
-    GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" pull /sdcard/screenrecord.mp4 ~/Desktop/record"+ time +".mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
-    GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" shell rm /sdcard/screenrecord.mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" pull /sdcard/screenrecord.mp4 ~/Desktop/record"+ time +".mp4"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 
 }
 

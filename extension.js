@@ -105,10 +105,14 @@ const AndroidMenu = new Lang.Class({
             AdbHelper.stopScreenRecording(device.deviceId);
             screenRecord.recording = false;
             screenRecord.deviceId = 0;
+            this._icon.icon_name = 'android_icon'
+            Main.notify("Screen recording saved in Desktop")
+
         } else {
             AdbHelper.recordScreen(device.deviceId);
             screenRecord.recording = true;
             screenRecord.deviceId = device.deviceId;
+            this._icon.icon_name = 'record_icon'
         }
     },
 
