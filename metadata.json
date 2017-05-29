@@ -3,5 +3,6 @@
 	"name": "android-tool", 
 	"shell-version": ["3.18.5"], 
 	"url":"https://github.com/naman14/gnome-android-tool",
-	"description": "Android adb tools - screencapture, screen recording, remote adb etc"
+	"description": "Android adb tools - screencapture, screen recording, remote adb etc",
+	"version": 2
 }
