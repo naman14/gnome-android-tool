@@ -88,6 +88,10 @@ function useUsb() {
 
 }
 
+function captureBugReport(deviceId) {
+    let [res, out, error] = GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" bugreport ~/Desktop"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+}
+
 function getDeviceIp(deviceId) {
      let [res, out, error] = GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell ip route | awk '{print $9}'"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
      return out.toString().trim();

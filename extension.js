@@ -130,6 +130,11 @@ const AndroidMenu = new Lang.Class({
         }
     },
 
+    _captureBugReport: function(device) {
+        AdbHelper.captureBugReport(device.deviceId);
+        Main.notify("Capturing bug report, will be saved in Desktop");
+    },
+
     _addMenuItems: function(devices) {
 
             this.menu.removeAll();
@@ -179,6 +184,12 @@ const AndroidMenu = new Lang.Class({
                         this._connectTCP(device)
                     }));
                     section.addMenuItem(remoteItem);
+
+                    let bugReportItem = new AndroidMenuItem({label: "Capture bug report", icon: 'bug_report_icon'});
+                    bugReportItem.connect('activate', Lang.bind(this, function() {
+                        this._captureBugReport(device)
+                    }));
+                    section.addMenuItem(bugReportItem);
 
                     this.menu.addMenuItem(section)
                     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
