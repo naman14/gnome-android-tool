@@ -89,7 +89,8 @@ function useUsb() {
 }
 
 function captureBugReport(deviceId) {
-    let [res, out, error] = GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" bugreport ~/Desktop"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    let time = '$(date +%Y-%m-%d-%H:%M)'
+    let [res, out, error] = GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" bugreport > ~/Desktop/bugreport"+ time +".txt"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 }
 
 function getDeviceIp(deviceId) {

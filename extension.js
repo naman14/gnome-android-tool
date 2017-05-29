@@ -1,18 +1,12 @@
 
 const St = imports.gi.St;
 const Main = imports.ui.main;
-const Tweener = imports.ui.tweener;
 const PanelMenu = imports.ui.panelMenu;
-const Shell = imports.gi.Shell;
 const PopupMenu = imports.ui.popupMenu;
-const Clutter = imports.gi.Clutter;
 const Panel = imports.ui.panel;
 const Lang = imports.lang;
 const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
-const Gio = imports.gi.Gio;
-
-let button;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
