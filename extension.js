@@ -19,6 +19,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const AdbHelper = Me.imports.adbhelper;
 
 let screenRecord = {recording: false, deviceId: 0};
+let tcpConnection ={connected: false};
 
 const AndroidMenuItem = new Lang.Class({
     Name: 'AndroidMenuItem',
@@ -71,6 +72,7 @@ const AndroidMenu = new Lang.Class({
         this.actor.connect('button-press-event', Lang.bind(this,this._findDevices));
 
         this._addErrorItem("No devices found");
+        AdbHelper.startDaemon();
     
     },
 
@@ -117,8 +119,15 @@ const AndroidMenu = new Lang.Class({
     },
 
     _connectTCP: function(device) {
-        let status = AdbHelper.establishTCPConnection(device.deviceId)
-        Main.notify(status)
+
+        if(tcpConnection.connected) {
+            lAdbHelper.useUsb();
+            tcpConnection.connected = false;
+        } else {
+            let status = AdbHelper.establishTCPConnection(device.deviceId);
+            tcpConnection.connected = true;
+            Main.notify(status);
+        }
     },
 
     _addMenuItems: function(devices) {
@@ -156,7 +165,15 @@ const AndroidMenu = new Lang.Class({
                     }));
                     section.addMenuItem(recordScreenItem);
 
-                    let remoteItem = new AndroidMenuItem({label: "Establish remote connection", icon: "android_icon"});
+                    let remoteLabel = "Establish remote connection"
+                    let remoteIcon = "remote_icon"
+
+                    if(tcpConnection.connected) {
+                        remoteLabel = "Connected over TCP. Click to use USB instead";
+                        remoteIcon = 'remote_off_icon'
+                    }
+
+                    let remoteItem = new AndroidMenuItem({label: remoteLabel, icon: remoteIcon});
 
                     remoteItem.connect('activate', Lang.bind(this, function() {
                         this._connectTCP(device)

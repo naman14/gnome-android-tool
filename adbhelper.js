@@ -49,6 +49,10 @@ function getDeviceDetail(deviceId) {
         }
 }
 
+function startDaemon() {
+        GLib.spawn_async(null, ["bash", "-c", "adb devices"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+
+}
 
 function takeScreenshot(deviceId) {
     let time = '$(date +%Y-%m-%d-%H:%M)'
@@ -76,6 +80,11 @@ function establishTCPConnection(deviceId) {
     let [res, out, error] = GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId + " connect " + deviceIp+":5555"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 
     return out.toString().trim();
+
+}
+
+function useUsb() {
+    let [res, out, error] = GLib.spawn_async(null, ["bash", "-c", "adb usb"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 
 }
 
