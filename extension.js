@@ -50,13 +50,15 @@ const AndroidMenu = new Lang.Class({
     Extends: PanelMenu.Button,
 
     _init: function() {
-         this.parent(0.0, "Android Menu", false);
+        this.parent(0.0, "Android Menu", false);
 
         let hbox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
         this._icon = new St.Icon({ icon_name: 'android_icon',
                                     style_class: 'system-status-icon'
         });
+
+        //add panel menu button
         hbox.add_child(this._icon);
         hbox.add_child(PopupMenu.arrowIcon(St.Side.BOTTOM));
         this.actor.add_actor(hbox);
@@ -66,6 +68,8 @@ const AndroidMenu = new Lang.Class({
         this.actor.connect('button-press-event', Lang.bind(this,this._findDevices));
 
         this._addErrorItem("No devices found");
+
+        //start adb daemon if not running
         AdbHelper.startDaemon();
     
     },
@@ -141,15 +145,18 @@ const AndroidMenu = new Lang.Class({
 
                     let section = new PopupMenu.PopupMenuSection();
 
+                    //device name and id
                     let deviceItem = new AndroidMenuItem({label: device.name.trim() + " - " + device.deviceId.trim()});
                     section.addMenuItem(deviceItem);
 
+                    //add screenshot item
                     let screenshotItem = new AndroidMenuItem({label: "Take screenshot", icon: 'screenshot_icon'});
                     screenshotItem.connect('activate', Lang.bind(this, function() {
                         this._screenshotClicked(device)
                     }));
                     section.addMenuItem(screenshotItem);
 
+                    //add screen record item
                     let recordLabel = "Record screen"
                     let recordIcon = "record_icon"
 
@@ -164,6 +171,7 @@ const AndroidMenu = new Lang.Class({
                     }));
                     section.addMenuItem(recordScreenItem);
 
+                    //add remote connection item
                     let remoteLabel = "Establish remote connection"
                     let remoteIcon = "remote_icon"
 
@@ -179,6 +187,7 @@ const AndroidMenu = new Lang.Class({
                     }));
                     section.addMenuItem(remoteItem);
 
+                    //add bug report item
                     let bugReportItem = new AndroidMenuItem({label: "Capture bug report", icon: 'bug_report_icon'});
                     bugReportItem.connect('activate', Lang.bind(this, function() {
                         this._captureBugReport(device)
@@ -215,6 +224,7 @@ const AndroidMenu = new Lang.Class({
 
 
 function init(extensionMeta) {
+    //add icons to search path
     let theme = imports.gi.Gtk.IconTheme.get_default();
     theme.append_search_path(extensionMeta.path + "/icons");
 }

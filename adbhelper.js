@@ -49,13 +49,17 @@ function getDeviceDetail(deviceId) {
         }
 }
 
+//start adb daemon on init
 function startDaemon() {
-        GLib.spawn_async(null, ["bash", "-c", "adb devices"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    GLib.spawn_async(null, ["bash", "-c", "adb devices"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 
 }
 
 function takeScreenshot(deviceId) {
+
+    //current time
     let time = '$(date +%Y-%m-%d-%H:%M)'
+
     GLib.spawn_async(null, ["bash", "-c", "adb -s "+ deviceId +" shell screencap -p | sed 's/\r$//' > ~/Desktop/screen"+ time +".png"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
 }
 
@@ -74,6 +78,7 @@ function stopScreenRecording(deviceId, pid) {
 }
 
 function establishTCPConnection(deviceId) {
+
     let deviceIp = getDeviceIp(deviceId);
 
     GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId + " tcpip 5555"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
@@ -94,12 +99,12 @@ function captureBugReport(deviceId) {
 }
 
 function getDeviceIp(deviceId) {
-     let [res, out, error] = GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell ip route | awk '{print $9}'"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
-     return out.toString().trim();
+    let [res, out, error] = GLib.spawn_sync(null, ["bash", "-c", "adb -s "+ deviceId +" shell ip route | awk '{print $9}'"], null, GLib.SpawnFlags.SEARCH_PATH, null, null);
+    return out.toString().trim();
 
 }
 
 
 function isEmpty(str) {
-        return (!str || str.length === 0 || !str.trim());
+    return (!str || str.length === 0 || !str.trim());
 }

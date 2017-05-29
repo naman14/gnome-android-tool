@@ -1,1 +1,7 @@
-{"uuid": "android-tool@naman14.github.com", "name": "android-tool", "shell-version": ["3.18.5"], "description": "Android adb tools - screencapture, remote adb etc"}
+{
+	"uuid": "android-tool@naman14.github.com",
+	"name": "android-tool", 
+	"shell-version": ["3.18.5"], 
+	"url":"https://github.com/naman14/gnome-android-tool",
+	"description": "Android adb tools - screencapture, screen recording, remote adb etc"
+}
