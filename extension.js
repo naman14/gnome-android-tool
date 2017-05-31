@@ -5,7 +5,6 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Panel = imports.ui.panel;
 const Lang = imports.lang;
-const Util = imports.misc.util;
 const GLib = imports.gi.GLib;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -25,7 +24,7 @@ const AndroidMenuItem = new Lang.Class({
 
         if(item.icon != null) {
             this._icon = new St.Icon({ icon_name: item.icon,
-                                       icon_size: 16 });
+             icon_size: 16 });
 
             this.actor.add_child(this._icon);
         }
@@ -55,7 +54,7 @@ const AndroidMenu = new Lang.Class({
         let hbox = new St.BoxLayout({style_class: 'panel-status-menu-box'});
 
         this._icon = new St.Icon({ icon_name: 'android_icon',
-                                    style_class: 'system-status-icon'
+            style_class: 'system-status-icon'
         });
 
         //add panel menu button
@@ -71,7 +70,7 @@ const AndroidMenu = new Lang.Class({
 
         //start adb daemon if not running
         AdbHelper.startDaemon();
-    
+        
     },
 
     _findDevices: function() {
@@ -83,11 +82,11 @@ const AndroidMenu = new Lang.Class({
             this._addErrorItem(result.error);
         } else {
 
-        if(result.devices != null && result.devices.length!=0) {
-            this._addMenuItems(result.devices);
-        } else {
-            this._addErrorItem("No devices found");
-        }
+            if(result.devices != null && result.devices.length!=0) {
+                this._addMenuItems(result.devices);
+            } else {
+                this._addErrorItem("No devices found");
+            }
 
         }
 
@@ -97,7 +96,7 @@ const AndroidMenu = new Lang.Class({
 
         AdbHelper.takeScreenshot(device.deviceId);
         Main.notify("Screenshot saved in Desktop")
-    
+        
     },
 
     _recordScreen: function(device) {
@@ -119,11 +118,17 @@ const AndroidMenu = new Lang.Class({
     _connectTCP: function(device) {
 
         if(tcpConnection.connected) {
-            lAdbHelper.useUsb();
+            AdbHelper.useUsb();
             tcpConnection.connected = false;
         } else {
             let status = AdbHelper.establishTCPConnection(device.deviceId);
-            tcpConnection.connected = true;
+
+            if(status.indexOf("unable to connect") !== -1) {
+                tcpConnection.connected = false;
+            } else {
+                tcpConnection.connected = true;
+            }
+
             Main.notify(status);
         }
     },
@@ -135,15 +140,15 @@ const AndroidMenu = new Lang.Class({
 
     _addMenuItems: function(devices) {
 
-            this.menu.removeAll();
+        this.menu.removeAll();
 
-            for(var i=0; i < devices.length; i++) {
+        for(var i=0; i < devices.length; i++) {
 
-                let device = devices[i];
+            let device = devices[i];
 
-                if(device != null) {
+            if(device != null) {
 
-                    let section = new PopupMenu.PopupMenuSection();
+                let section = new PopupMenu.PopupMenuSection();
 
                     //device name and id
                     let deviceItem = new AndroidMenuItem({label: device.name.trim() + " - " + device.deviceId.trim()});
@@ -197,30 +202,30 @@ const AndroidMenu = new Lang.Class({
                     this.menu.addMenuItem(section)
                     this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
+                }
+
+                
             }
 
             
-            }
+        },
 
-      
-    },
-
-    _addErrorItem: function(error) {
+        _addErrorItem: function(error) {
 
             this.menu.removeAll();
             let errorItem = new AndroidMenuItem({label: error});
             this.menu.addMenuItem(errorItem);
 
-    },
+        },
 
 
-    _toArray: function(str) {
-        let arr = str.split(" ");
-        return arr;
-    }
+        _toArray: function(str) {
+            let arr = str.split(" ");
+            return arr;
+        }
 
 
-});
+    });
 
 
 function init(extensionMeta) {
@@ -235,7 +240,7 @@ let _indicator;
 
 function enable() {
     _indicator = new AndroidMenu;
- 
+    
     Main.panel.addToStatusArea('android-menu', _indicator);
 
 }
