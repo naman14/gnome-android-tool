@@ -1,8 +1,6 @@
 # gnome-android-tool
 Gnome shell extension for adb tools 
 
-https://extensions.gnome.org/extension/1232/android-tool/
-
 - Take screenshot
 - Record screen
 - Connect over TCP
@@ -12,7 +10,8 @@ https://extensions.gnome.org/extension/1232/android-tool/
 
 # Installation
 ## Install from extensions website
-- Install extension from https://extensions.gnome.org/extension/1232/android-tool/
+- Install extension from https://extensions.gnome.org/extension/1232/android-tool/ 
+  (Waiting for extenaion to be reviewed and approved)
   
 ## Install from Git
 - Create folder `android-tool@naman14.github.com` in `~/.local/share/gnome-shell/extensions`
